@@ -27,6 +27,7 @@ client.connect((err) => {
   const userCollection = client.db("jobpedia").collection("users");
   const employerCollection = client.db("jobpedia").collection("employers");
   const adminCollection = client.db("jobpedia").collection("admin");
+  const applicationCollection = client.db("jobpedia").collection("applications");
   //add user and employer to database
 
   app.post("/add-user", (req, res) => {
@@ -123,6 +124,13 @@ client.connect((err) => {
     });
   });
 
+  //all employer list
+  app.get("/all-employers", (req, res) => {
+    employerCollection.find().toArray((err, document) => {
+      res.send(document);
+    });
+  });
+
   //post a job
   app.post("/post-job", (req, res) => {
     jobCollection
@@ -183,6 +191,31 @@ client.connect((err) => {
       });
   });
 
+//apply for jobs
+
+app.post("/apply-job", (req, res) => {
+  applicationCollection
+    .insertOne({
+      ...req.body,
+      
+    })
+    .then((result) => {
+      res.send({ message: "application is accepted successfully.... " });
+    });
+});
+
+//get the applications for an employer
+app.get("/applied-jobs/:email", (req, res) => {
+  const email = req.params.email;
+  applicationCollection
+    .find({ jobPostedBy: email })
+    .toArray((err, document) => {
+      res.send(document);
+    });
+});
+
+
+
   //search for jobs
   app.get("/search-jobs/:query", (req, res) => {
     const query = new RegExp(`^${req.params.query}`, "i");
@@ -196,9 +229,6 @@ client.connect((err) => {
 });
 
 
-app.get('/',(req,res)=>{
-  res.send('hello world')
-})
 
 
 app.listen(process.env.PORT ||port, () => {});
