@@ -1,6 +1,4 @@
-//user: sagar
 
-//pass: NvkM6By0v8n3wPMY;
 
 require("dotenv").config();
 const express = require("express");
@@ -196,5 +194,11 @@ client.connect((err) => {
       });
   });
 });
+
+
+app.get('/',(req,res)=>{
+  res.send('hello world')
+})
+
 
 app.listen(port, () => {});
